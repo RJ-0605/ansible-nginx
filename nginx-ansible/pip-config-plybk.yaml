@@ -1,0 +1,37 @@
+---
+- name: nginx install and start services
+  hosts: all 
+  become: true
+
+
+  tasks: 
+  - name: Install dependencies
+    apt:
+      name:
+        - python3
+        - python3-pip
+        - python3-setuptools
+        - python3-flask
+      state: latest
+      update_cache: True
+
+  - name: Install required pip packages
+    pip:
+      name:       
+        - argparse
+        - bleach
+        - requests-toolbelt
+      executable: pip3
+    
+  - name: run main.py flask script in detached mode 
+    command: nohup python3 /home/ubuntu/config-files/flask-app/main.py </dev/null >/dev/null 2>&1 &
+    async: True
+    poll:  0
+
+  # - name: kill flask process
+  #   command: sudo lsof -ti tcp:5000 | xargs sudo  kill -9
+
+
+  # - name: Install specified python requirements
+  #   ansible.builtin.pip:
+  #     requirements: /config-files/flask-app/requirements.txt

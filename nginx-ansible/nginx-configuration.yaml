@@ -1,0 +1,50 @@
+- hosts: all
+  become: true
+  vars:
+   port: 5000
+
+  tasks:
+   -  name: replace and apply  nginx configuration file
+      template: 
+            src: files/new-config.conf.j2
+            dest: /etc/nginx/sites-available/default
+      notify: Restart Nginx
+   
+   -  name: Enable new site
+      file:
+         src: /etc/nginx/sites-available/default
+         dest: /etc/nginx/sites-enabled/default
+         state: link
+      notify: Restart Nginx
+
+   # - name: restart nginx
+   #   service: name=nginx state=restarted
+
+  handlers:
+   - name: Restart Nginx
+     service:
+      name: nginx
+      state: restarted  
+
+
+
+
+
+
+
+
+
+
+
+#   tasks:
+#     - name: Setup nginx conf
+#       template:
+#         src=nginx.conf.tpl
+#         dest=/etc/nginx/nginx.conf
+#     - command
+#       notify: restart nginx
+#   handlers:
+#     - name: restart nginx
+#       service:
+#         name=nginx
+#         state=restarted
